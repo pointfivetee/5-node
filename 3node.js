@@ -14,19 +14,21 @@ const NETWORK = [
 ];
 
 function generate() {
-    console.log("Generating");
+    console.log("Generating nodes!");
     let nodes = [];
     for (let i = 0; i < 5; i++) {
         let node = generateNode();
         node.label = String.fromCharCode(65+i);
         nodes.push(node);
     }
+    console.log("Generating clues!");
     for (let link of NETWORK) {
         let fromNode = nodes[link[0]];
         let toNode = nodes[link[1]];
         let clue = generateClue(fromNode, toNode);
         fromNode.clues.push(clue);
     }
+    console.log("Finished generating!");
     for (let node of nodes) {
         console.log(`${node.label}: ${node.name}`);
         for (let clue of node.clues) {
@@ -51,7 +53,7 @@ function renderNode(node) {
     });
 }
 
-const RETRIES = 3;
+/*const RETRIES = 3;
 let picks = [];
 function pickRandom(arr) {
     let i = 0;
@@ -68,6 +70,12 @@ function pickRandom(arr) {
     let pick = arr[Math.floor(Math.random() * arr.length)];
     console.log("accepting random pick (after exhausting retries):", pick);
     return pick;
+}*/
+
+function pickRandom(arr) {
+    let pick = arr[Math.floor(Math.random() * arr.length)];
+    console.log("accepting random pick:", pick);
+    return pick;
 }
 
 function generateNode() {
@@ -80,23 +88,36 @@ function generateNode() {
         label: "",
     };
     node.item = () => {
-        return node.nodeType.item(node);
+        return pickRandom(node.nodeType.items)(node);
     };
     node.topic = () => {
-        return node.nodeType.topic(node);
+        return pickRandom(node.nodeType.topics)(node);
     };
     node.person = () => {
-        return node.nodeType.person(node);
+        return pickRandom(node.nodeType.people)(node);
     };
     return node;
 }
 
 function generateClue(fromNode, toNode) {
-    let clueText = fromNode.nodeType.clue(toNode);
+    let clueText = pickRandom(fromNode.nodeType.clues)(toNode);
+    console.log(clueText);
     return {
         from: fromNode.label,
         to: toNode.label,
         text: clueText,
+    }
+}
+
+function t(strings, ...keys) {
+    return function (context) {
+        let result = [strings[0]];
+        keys.forEach(function(key, i) {
+            let value = context[key];
+            result.push(value instanceof Function ? value() : value instanceof Array ? pickRandom(value) : value, strings[i + 1]);
+        });
+        console.log(result);
+        return result.join("");
     }
 }
 
@@ -106,23 +127,25 @@ const NODE_TYPES = [
         id: "residence",
         name: () => {return `${pickRandom(["Alice", "Bob", "Claire"])}'s ${pickRandom(["hovel", "cottage", "house", "apartment", "estate", "mansion"])}`},
         subtitle: "a private residence",
-        clue: (toNode) => {return pickRandom([
-            `${toNode.item()} hidden in ${pickRandom(["bedroom", "kitchen", "privy", "garden"])}`,
-            `wastepaper basket contains letter from ${toNode.person()}`,
-            `most recent diary entry mentions ${toNode.person()}`,
-            `most recent diary entry mentions ${toNode.topic()}`,
-            `a sketchbook filled with drawings of ${toNode.person()}`,
-            `${toNode.person()} is bound and gagged in a closet`,
-        ])},
-        item: (toNode) => {return pickRandom([
-            `an invitation to a gathering at ${toNode.name}`,
-            `a scrap of paper bearing the address of ${toNode.name}`,
-            `a crudely drawn map with directions to ${toNode.name}`,
-        ])},
-        topic: (toNode) => {return toNode.name},
-        person: (toNode) => {return toNode.name.split("'")[0]},
+        clues: [
+            t`${'item'} hidden in ${["bedroom", "kitchen", "privy", "garden"]}`,
+            t`wastepaper basket contains letter from ${'person'}`,
+            t`most recent diary entry mentions ${'person'}`,
+            t`most recent diary entry mentions ${'topic'}`,
+            t`a sketchbook filled with drawings of ${'person'}`,
+            t`${'person'} is bound and gagged in a closet`,
+        ],
+        items: [
+            t`an invitation to a gathering at ${'name'}`,
+            t`a scrap of paper bearing the address of ${'name'}`,
+            t`a crudely drawn map with directions to ${'name'}`,
+        ],
+        topics: [t`${'name'}`],
+        people: [
+            (node) => node.name.split("'")[0],
+        ],
     },
-    {
+    /*{
         id: "temple",
         name: () => {return `The Temple of ${pickRandom(["Pelor", "Boccob", "Vecna"])}`},
         subtitle: "a place of worship",
@@ -341,7 +364,7 @@ const NODE_TYPES = [
         ])},
         topic: (toNode) => {return toNode.name},
         person: (toNode) => {return `a guest of honor at the upcoming Royal Ball`},
-    }
+    }*/
 ];
 
 generate();
