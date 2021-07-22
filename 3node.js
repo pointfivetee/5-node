@@ -53,7 +53,7 @@ function renderNode(node) {
     });
 }
 
-/*const RETRIES = 3;
+const RETRIES = 5;
 let picks = [];
 function pickRandom(arr) {
     let i = 0;
@@ -61,22 +61,20 @@ function pickRandom(arr) {
         let pick = arr[Math.floor(Math.random() * arr.length)];
         if (! picks.includes(pick)) {
             picks.push(pick);
-            console.log("accepting random pick:", pick);
             return pick;
         }
-        console.log("rejecting random pick:", pick)
         i++;
     }
     let pick = arr[Math.floor(Math.random() * arr.length)];
-    console.log("accepting random pick (after exhausting retries):", pick);
+    console.log("<<retry limit reached: reusing item>>");
     return pick;
-}*/
+}
 
-function pickRandom(arr) {
+/*function pickRandom(arr) {
     let pick = arr[Math.floor(Math.random() * arr.length)];
     console.log("accepting random pick:", pick);
     return pick;
-}
+}*/
 
 function generateNode() {
     let nodeType = pickRandom(NODE_TYPES);
@@ -101,7 +99,7 @@ function generateNode() {
 
 function generateClue(fromNode, toNode) {
     let clueText = pickRandom(fromNode.nodeType.clues)(toNode);
-    console.log(clueText);
+    //console.log(clueText);
     return {
         from: fromNode.label,
         to: toNode.label,
@@ -109,14 +107,14 @@ function generateClue(fromNode, toNode) {
     }
 }
 
-function t(strings, ...keys) {
+function t(strings, ...tokens) {
     return function (context) {
         let result = [strings[0]];
-        keys.forEach(function(key, i) {
-            let value = context[key];
+        tokens.forEach(function(token, i) {
+            let value = token instanceof Array ? token : context[token];
             result.push(value instanceof Function ? value() : value instanceof Array ? pickRandom(value) : value, strings[i + 1]);
         });
-        console.log(result);
+        console.log(result.join(""));
         return result.join("");
     }
 }
@@ -142,122 +140,133 @@ const NODE_TYPES = [
         ],
         topics: [t`${'name'}`],
         people: [
-            (node) => node.name.split("'")[0],
+            node => node.name.split("'")[0],
         ],
     },
-    /*{
+    {
         id: "temple",
-        name: () => {return `The Temple of ${pickRandom(["Pelor", "Boccob", "Vecna"])}`},
+        name: () => {return `The Temple of ${pickRandom(["Pelor", "Boccob", "Vecna", "Nerull", "Gruumsh", "Lolth"])}`},
         subtitle: "a place of worship",
-        clue: (toNode) => {return pickRandom([
-            `head priest carries ${toNode.item()}`,
-            `${toNode.person()} is an avid worshipper`,
-        ])},
-        item: (toNode) => {return pickRandom([
-            `a holy symbol of ${toNode.name.split(" ")[3]}`,
-            `a small statuette of ${toNode.name.split(" ")[3]}`,
-            `a ${pickRandom(["trinket", "minor relic", "holy artifact"])} stolen from ${toNode.name}`
-        ])},
-        topic: (toNode) => {return pickRandom([
-            toNode.name,
-            toNode.name.split(" ")[3],
-        ])},
-        person: (toNode) => {return `the head priest at ${toNode.name}`},
+        clues: [
+            t`head priest carries ${'item'}`,
+            t`${'person'} is an avid worshipper`,
+        ],
+        items: [
+            node => `a holy symbol of ${node.name.split(" ")[3]}`,
+            node => `a small statuette of ${node.name.split(" ")[3]}`,
+            t`a ${["trinket", "minor relic", "holy artifact"]} stolen from ${'name'}`
+        ],
+        topics: [
+            t`${'name'}`,
+            node => node.name.split(" ")[3],
+        ],
+        people: [t`the head priest at ${'name'}`],
     },
     {
         id: "dungeon",
-        name: () => {return "The Deep Dark Dungeon"},
+        name: () => {return `The ${pickRandom(["Deep Dark", "Forgotten", "Forbidden", "Deeper Darker", "Deepest Darkest", "Dragon's"])} Dungeon`},
         subtitle: "a dangerous place to delve",
-        clue: (toNode) => {return pickRandom([
-            `treasure chest contains ${toNode.item()}`,
-            `kobold trash pile contains ${toNode.item()}`,
-            `hidden chamber contains ${toNode.item()}`,
-            `skeleton of unlucky adventurer still clutching ${toNode.item()}`,
-        ])},
-        item: (toNode) => {return pickRandom([
-            `a map with the location of ${toNode.name} marked with an X`,
-            `notes detailing a planned expedition to ${toNode.name}`,
-        ])},
-        topic: (toNode) => {return toNode.name},
-        person: (toNode) => {return pickRandom([
-            `the guardian of ${toNode.name}`,
-            `an adventurer last seen heading to ${toNode.name}`,
-        ])},
+        clues: [
+            t`treasure chest contains ${'item'}`,
+            t`kobold trash pile contains ${'item'}`,
+            t`hidden chamber contains ${'item'}`,
+            t`skeleton of unlucky adventurer still clutching ${'item'}`,
+        ],
+        items: [
+            t`a map with the location of ${'name'} marked with an X`,
+            t`notes detailing a planned expedition to ${'name'}`,
+        ],
+        topics: [
+            t`${'name'}`,
+        ],
+        people: [
+            t`the guardian of ${'name'}`,
+            t`an adventurer last seen heading to ${'name'}`,
+        ],
     },
     {
         id: "tavern",
         name: () => {return `The ${pickRandom(["Laughing", "Prancing", "Winking"])} ${pickRandom(["Donkey", "Dragon", "Rooster"])}`},
         subtitle: "the local tavern",
-        clue: (toNode) => {return pickRandom([
-            `mysterious guest left behind ${toNode.item()}`,
-            `nervous patrons discuss ${toNode.topic()} in hushed tones`,
-            `bartender relays rumor about ${toNode.topic()}`,
-            `nervous patrons discuss ${toNode.person()} in hushed tones`,
-            `bartender relays rumor about ${toNode.person()}`,
-            `graffiti in privy includes a crude message about ${toNode.person()}`,
-        ])},
-        item: (toNode) => {return `a beer stein pilfered from ${toNode.name}`},
-        topic: (toNode) => {return pickRandom([
-            toNode.name,
-            `a recent bar brawl at ${toNode.name}`
-        ])},
-        person: (toNode) => {return `the tavernkeep at ${toNode.name}`},
+        clues: [
+            t`mysterious guest left behind ${'item'}`,
+            t`in hushed tones, nervous patrons discuss ${'topic'}`,
+            t`in hushed tones, nervous patrons discuss ${'person'}`,
+            t`bartender relays rumor about ${'topic'}`,
+            t`bartender relays rumor about ${'person'}`,
+            t`graffiti in privy includes a crude message about ${'person'}`,
+            t`mysterious stranger is actually ${'person'}, wearing ${["an effective", "a passable", "an unconvincing"]} disguise`,
+            t`bard performs a ${["playful ditty", "somber tune", "wistful ballad"]} about ${'topic'}`,
+            t`bard performs a ${["playful ditty", "somber tune", "wistful ballad"]} about ${'person'}`,
+        ],
+        items: [
+            t`a beer stein pilfered from ${'name'}`,
+            t`a drink menu from ${'name'}`,
+            t`a bottle of wine sold exclusively at ${'name'}`,
+        ],
+        topics: [
+            t`${'name'}`,
+            t`a recent bar brawl at ${'name'}`
+        ],
+        people: [t`${'name'}'s barkeep`],
     },
     {
         id: "graveyard",
-        name: () => {return "a spooky graveyard"},
+        name: () => {return `a spooky ${pickRandom(["boneyard", "catacomb", "cemetery", "graveyard"])}`},
         subtitle: "an undead plague just waiting to happen",
-        clue: (toNode) => {return pickRandom([
-            `sarcophagus contains ${toNode.item()}`,
-            `disembodied voice ${pickRandom(["whispers dire warnings", "chatters", "drones on and on"])} about ${toNode.topic()}`,
-            `in their haste, grave robbers dropped ${toNode.item()}`,
-        ])},
-        item: (toNode) => {return pickRandom([
-            "a handful of fresh grave-dirt",
-            `a copy of ${pickRandom([
+        clues: [
+            t`sarcophagus contains ${'item'}`,
+            t`disembodied voice ${["whispers dire warnings", "chatters", "drones on and on"]} about ${'topic'}`,
+            t`in their haste, grave robbers dropped ${'item'}`,
+        ],
+        items: [
+            t`a handful of fresh grave-dirt`,
+            t`a copy of ${[
                 "<em>Necromancy 101</em>",
                 "<em>Necromancy for Dummies</em>",
                 "<em>The Idiot's Guide to Raising the Dead</em>",
-            ])}`,
-        ])},
-        topic: (toNode) => {return pickRandom([
-            toNode.name,
-            "recent undead sightings",
-            "zombie attacks",
-            "the restless dead",
-        ])},
-        person: (toNode) => {return `your friendly neighborhood gravedigger`},
+            ]}`,
+        ],
+        topics: [
+            t`${name}`,
+            t`recent undead sightings`,
+            t`zombie attacks`,
+            t`the restless dead`,
+        ],
+        people: [
+            t`your friendly neighborhood gravedigger`
+        ],
     },
     {
         id: "hideout",
         name: () => {return "a secret hideout"},
         subtitle: "a gathering place for villains",
-        clue: (toNode) => {return pickRandom([
-            `guard carries ${toNode.item()}`,
-            `if interrogated, guard mentions ${toNode.topic()}`,
-            `if interrogated, guard mentions ${toNode.person()}`,
-            `${toNode.person()} being held prisoner inside`,
-            `secret room contains ${toNode.item()}`,
-            `locked chest contains ${toNode.item()}`,
-        ])},
-        item: (toNode) => {return "a map marked with an X"},
-        topic: (toNode) => {return toNode.name},
-        person: (toNode) => {return `a villainous henchperson`},
+        clues: [
+            t`guard carries ${'item'}`,
+            t`if interrogated, guard mentions ${'topic'}`,
+            t`if interrogated, guard mentions ${'person'}`,
+            t`${'person'} being held prisoner inside`,
+            t`secret room contains ${'item'}`,
+            t`locked chest contains ${'item'}`,
+        ],
+        items: [t`a map marked with an X`],
+        topics: [t`${'name'}`],
+        people: [t`a villainous (but easily tailed) henchperson`],
     },
     {
         id: "sewers",
         name: () => {return "the sewers"},
         subtitle: "a smelly place to look for clues",
-        clue: (toNode) => {return pickRandom([
-            `${toNode.item()} hidden in disused tunnel`,
-            `mad sewer-dwelling hermit babbles about ${toNode.topic()}`,
-            `mad sewer-dwelling hermit babbles about ${toNode.person()}`,
-            `mad sewer-dwelling hermit shoves ${toNode.item()} into PC's hands`,
-            `${toNode.person()} has been skulking about the area`,
-        ])},
-        item: (toNode) => {return "a map of the city sewers"},
-        topic: (toNode) => {return toNode.name},
-        person: (toNode) => {return `a mad sewer-dwelling hermit`},
+        clues: [
+            t`${'item'} hidden in disused tunnel`,
+            t`mad sewer-dwelling hermit babbles about ${'topic'}`,
+            t`mad sewer-dwelling hermit babbles about ${'person'}`,
+            t`mad sewer-dwelling hermit shoves ${'item'} into PC's hands`,
+            t`${'person'} has been skulking about the area`,
+        ],
+        items: [t`a map of the city sewers`],
+        topics: [t`${'name'}`],
+        people: [t`a mad sewer-dwelling hermit`],
     },
     {
         id: "shop",
@@ -275,42 +284,45 @@ const NODE_TYPES = [
             "the smithy",
         ])},
         subtitle: "a local shop",
-        clue: (toNode) => {return pickRandom([
-            `${toNode.item()} hidden in storage room`,
-            `${toNode.person()} is a frequent customer`,
-            `shopkeeper is eager to blab about ${toNode.topic()}`,
-            `shopkeeper is eager to blab about ${toNode.person()}`,
-        ])},
-        item: (toNode) => {return pickRandom([
-            `a bill of sale from ${toNode.name}`,
-            `an expensive item purchased from ${toNode.name}`
-        ])},
-        topic: (toNode) => {return pickRandom([
-            toNode.name,
-            `${toNode.name}'s big going-out-of-business sale`
-        ])},
-        person: (toNode) => {return `the owner of ${toNode.name}`},
+        clues: [
+            t`${'item'} hidden in storage room`,
+            t`${'person'} is a frequent customer`,
+            t`shopkeeper is eager to blab about ${'topic'}`,
+            t`shopkeeper is eager to blab about ${'person'}`,
+            t`shopkeeper is willing to share information about ${'topic'}... for the right price`,
+            t`shopkeeper is willing to share information about ${'person'}... for the right price`,
+        ],
+        items: [
+            t`a bill of sale from ${'name'}`,
+            t`an expensive item purchased from ${'name'}`,
+        ],
+        topics: [
+            t`${'name'}`,
+            t`${'name'}'s big going-out-of-business sale`,
+            t`strange noises coming from ${'name'} at night`,
+        ],
+        people: [t`the owner of ${'name'}`],
     },
     // PEOPLE
-    {
+    /*{
         id: "npc",
         name: () => {return `${pickRandom(["Diego", "Elena", "Forrest", "Geraldine"])} ${pickRandom(["Greenhold", "Harrier", "Ironbolt", "Joyce"])}`},
         subtitle: "a person of interest",
         clue: (toNode) => {return pickRandom([
-            `carries ${toNode.item()}`,
-            `known associate of ${toNode.person()}`,
-            `frequent clandestine meetings with ${toNode.person()}`,
-            `romantically involved with ${toNode.person()}`,
-            `shares ${pickRandom(["rumors", "secrets", "gossip"])} about ${toNode.person()}`,
-            `shares ${pickRandom(["rumors", "secrets", "gossip"])} about ${toNode.topic()}`,
+            `carries ${'item'}`,
+            `known associate of ${'person'}`,
+            `frequent clandestine meetings with ${'person'}`,
+            `romantically involved with ${'person'}`,
+            `shares ${pickRandom(["rumors", "secrets", "gossip"])} about ${'person'}`,
+            `shares ${pickRandom(["rumors", "secrets", "gossip"])} about ${'topic'}`,
         ])},
         item: (toNode) => {return pickRandom([
-            `a note written on ${toNode.name}'s personalized stationery`,
-            `a ${pickRandom(["steamy", "poetic", "cheesy"])} love letter ${pickRandom(["penned by", "addressed to"])} ${toNode.name}`,
-            `a sketchbook filled with drawings of ${toNode.name}`
+            `a note written on ${'name'}'s personalized stationery`,
+            `a ${pickRandom(["steamy", "poetic", "cheesy"])} love letter ${pickRandom(["penned by", "addressed to"])} ${'name'}`,
+            `a sketchbook filled with drawings of ${'name'}`
         ])},
-        topic: (toNode) => {return toNode.name},
-        person: (toNode) => {return toNode.name},
+        topic: (toNode) => {return 'name'},
+        person: (toNode) => {return 'name'},
     },
     // ORGANIZATIONS
     {
@@ -318,35 +330,35 @@ const NODE_TYPES = [
         name: () => {return `the House of ${pickRandom(["Argentos", "Borealis", "Clairmont", "Desdemona", "Eagleton", "Flechette"])}`},
         subtitle: "a noble family",
         clue: (toNode) => {return pickRandom([
-            `bitter cousin shows the PCs ${toNode.item()}`,
-            `nosy servant overheard secret conversation about ${toNode.topic()}`,
-            `nosy servant overheard secret conversation about ${toNode.person()}`,
-            `philandering noble is having a torrid affair with ${toNode.person()}`
+            `bitter cousin shows the PCs ${'item'}`,
+            `nosy servant overheard secret conversation about ${'topic'}`,
+            `nosy servant overheard secret conversation about ${'person'}`,
+            `philandering noble is having a torrid affair with ${'person'}`
         ])},
         item: (toNode) => {return pickRandom([
-            `a letter sealed with the crest of ${toNode.name}`,
-            `a ${pickRandom(["priceless treasure", "family heirloom"])} stolen from the vaults of ${toNode.name}`,
+            `a letter sealed with the crest of ${'name'}`,
+            `a ${pickRandom(["priceless treasure", "family heirloom"])} stolen from the vaults of ${'name'}`,
         ])},
-        topic: (toNode) => {return toNode.name},
+        topic: (toNode) => {return 'name'},
         person: (toNode) => {return pickRandom([
-            `a lesser scion of ${toNode.name}`,
-            `the patriarch of ${toNode.name}`,
-            `the matriarch of ${toNode.name}`,
+            `a lesser scion of ${'name'}`,
+            `the patriarch of ${'name'}`,
+            `the matriarch of ${'name'}`,
         ])},
     },
     {
         id: "bandits",
         name: () => {return `The ${pickRandom(["Bloody", "Scarlet", "Iron"])} ${pickRandom(["Blades", "Claws", "Hawks"])}`},
         subtitle: "a bandit gang",
-        clue: (toNode) => {return `${toNode.item()} found in bandit hideout`},
-        item: (toNode) => {return `a discarded mask worn by members of ${toNode.name}`},
+        clue: (toNode) => {return `${'item'} found in bandit hideout`},
+        item: (toNode) => {return `a discarded mask worn by members of ${'name'}`},
         topic: (toNode) => {return pickRandom([
-            toNode.name,
+            'name',
             "the recent bandit attacks",
         ])},
         person: (toNode) => {return pickRandom([
-            `a member of ${toNode.name}`,
-            `the leader of ${toNode.name}`,
+            `a member of ${'name'}`,
+            `the leader of ${'name'}`,
         ])},
     },
     // EVENTS
@@ -355,14 +367,14 @@ const NODE_TYPES = [
         name: () => {return "the annual Royal Ball"},
         subtitle: "the social event of the season",
         clue: (toNode) => {return pickRandom([
-            `masked attendee hands the PCs ${toNode.item()}`,
-            `attendees gossip about ${toNode.topic()}`
+            `masked attendee hands the PCs ${'item'}`,
+            `attendees gossip about ${'topic'}`
         ])},
         item: (toNode) => {return pickRandom([
             "an embossed invitation to the Royal Ball",
             `a guest list for the Royal Ball with certain names ${pickRandom(["crossed out", "circled", "underlined"])}`
         ])},
-        topic: (toNode) => {return toNode.name},
+        topic: (toNode) => {return 'name'},
         person: (toNode) => {return `a guest of honor at the upcoming Royal Ball`},
     }*/
 ];
