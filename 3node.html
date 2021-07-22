@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>3-Node Mystery Generator</title>
+        <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui/dist/css/coreui.min.css">
+        <style>
+            .card-title, .card-subtitle {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body class="c-app" style="margin: 8px;">
+        <div class="c-wrapper">
+            <div class="c-header" style="text-align: center;">
+                <h1>3-Node Mystery Generator</h1>
+            </div>
+            <div class="c-body">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body row justify-content-center">
+                                    <div class="row justify-content-center">
+                                        <div id="node-A" class="col-4 card">
+                                            <h4 class="card-title">Node A</h4>
+                                            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                                            <div class="card-body">
+                                                <ul class="clue-list"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div id="node-B" class="col-4 card">
+                                            <h4 class="card-title">Node B</h4>
+                                            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                                            <div class="card-body">
+                                                <ul class="clue-list"></ul>
+                                            </div>
+                                        </div>
+                                        <div id="node-C" class="col-4 card">
+                                            <h4 class="card-title">Node C</h4>
+                                            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                                            <div class="card-body">
+                                                <ul class="clue-list"></ul>
+                                            </div>
+                                        </div>
+                                        <div id="node-D" class="col-4 card">
+                                            <h4 class="card-title">Node D</h4>
+                                            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                                            <div class="card-body">
+                                                <ul class="clue-list"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-center">
+                                        <div id="node-E" class="col-4 card">
+                                            <h4 class="card-title">Node E</h4>
+                                            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                                            <div class="card-body">
+                                                <ul class="clue-list"></ul>
+                                                <div style="text-align: center;">...and the heart of the mystery!</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary col-2" onclick="generate()" style="width: fit-content; margin: auto;">New Mystery</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="3node.js"></script>
+        <script src="https://unpkg.com/@coreui/coreui/dist/js/coreui.bundle.min.js"></script>
+    </body>
+</html>
