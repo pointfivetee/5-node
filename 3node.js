@@ -36,6 +36,8 @@ function generate() {
         }
         renderNode(node);
     }
+    // Reset list of previously chosen nodes
+    picks = [];
 }
 
 function renderNode(node) {
