@@ -307,79 +307,93 @@ const NODE_TYPES = [
         people: [t`the owner of ${'name'}`],
     },
     // PEOPLE
-    /*{
+    {
         id: "npc",
         name: () => {return `${pickRandom(["Diego", "Elena", "Forrest", "Geraldine"])} ${pickRandom(["Greenhold", "Harrier", "Ironbolt", "Joyce"])}`},
         subtitle: "a person of interest",
-        clue: (toNode) => {return pickRandom([
-            `carries ${'item'}`,
-            `known associate of ${'person'}`,
-            `frequent clandestine meetings with ${'person'}`,
-            `romantically involved with ${'person'}`,
-            `shares ${pickRandom(["rumors", "secrets", "gossip"])} about ${'person'}`,
-            `shares ${pickRandom(["rumors", "secrets", "gossip"])} about ${'topic'}`,
-        ])},
-        item: (toNode) => {return pickRandom([
-            `a note written on ${'name'}'s personalized stationery`,
-            `a ${pickRandom(["steamy", "poetic", "cheesy"])} love letter ${pickRandom(["penned by", "addressed to"])} ${'name'}`,
-            `a sketchbook filled with drawings of ${'name'}`
-        ])},
-        topic: (toNode) => {return 'name'},
-        person: (toNode) => {return 'name'},
+        clues: [
+            t`carries ${'item'}`,
+            t`known associate of ${'person'}`,
+            t`frequent clandestine meetings with ${'person'}`,
+            t`romantically involved with ${'person'}`,
+            t`shares ${["rumors", "secrets", "gossip"]} about ${'person'}`,
+            t`shares ${["rumors", "secrets", "gossip"]} about ${'topic'}`,
+        ],
+        items: [
+            t`a note written on ${'name'}'s personalized stationery`,
+            t`a ${["steamy", "poetic", "cheesy"]} love letter ${["penned by", "addressed to"]} ${'name'}`,
+            t`a sketchbook filled with drawings of ${'name'}`,
+        ],
+        topics: [
+            t`${'name'}`,
+        ],
+        people: [
+            t`${'name'}`,
+        ],
     },
     // ORGANIZATIONS
     {
         id: "noble-family",
         name: () => {return `the House of ${pickRandom(["Argentos", "Borealis", "Clairmont", "Desdemona", "Eagleton", "Flechette"])}`},
         subtitle: "a noble family",
-        clue: (toNode) => {return pickRandom([
-            `bitter cousin shows the PCs ${'item'}`,
-            `nosy servant overheard secret conversation about ${'topic'}`,
-            `nosy servant overheard secret conversation about ${'person'}`,
-            `philandering noble is having a torrid affair with ${'person'}`
-        ])},
-        item: (toNode) => {return pickRandom([
-            `a letter sealed with the crest of ${'name'}`,
-            `a ${pickRandom(["priceless treasure", "family heirloom"])} stolen from the vaults of ${'name'}`,
-        ])},
-        topic: (toNode) => {return 'name'},
-        person: (toNode) => {return pickRandom([
-            `a lesser scion of ${'name'}`,
-            `the patriarch of ${'name'}`,
-            `the matriarch of ${'name'}`,
-        ])},
+        clues: [
+            t`bitter cousin shows the PCs ${'item'}`,
+            t`nosy servant overheard secret conversation about ${'topic'}`,
+            t`nosy servant overheard secret conversation about ${'person'}`,
+            t`philandering noble is having a torrid affair with ${'person'}`
+        ],
+        items: [
+            t`a letter sealed with the crest of ${'name'}`,
+            t`a ${["priceless treasure", "family heirloom"]} stolen from the vaults of ${'name'}`,
+        ],
+        topics: [
+            t`${'name'}`,
+        ],
+        people: [
+            t`a lesser scion of ${'name'}`,
+            t`the patriarch of ${'name'}`,
+            t`the matriarch of ${'name'}`,
+        ],
     },
     {
         id: "bandits",
         name: () => {return `The ${pickRandom(["Bloody", "Scarlet", "Iron"])} ${pickRandom(["Blades", "Claws", "Hawks"])}`},
         subtitle: "a bandit gang",
-        clue: (toNode) => {return `${'item'} found in bandit hideout`},
-        item: (toNode) => {return `a discarded mask worn by members of ${'name'}`},
-        topic: (toNode) => {return pickRandom([
-            'name',
-            "the recent bandit attacks",
-        ])},
-        person: (toNode) => {return pickRandom([
-            `a member of ${'name'}`,
-            `the leader of ${'name'}`,
-        ])},
+        clues: [
+            t`${'item'} found in bandit hideout`,
+        ],
+        items: [
+            t`a discarded mask worn by members of ${'name'}`,
+        ],
+        topics: [
+            t`${'name'}`,
+            t`the recent bandit attacks`,
+        ],
+        people: [
+            t`a member of ${'name'}`,
+            t`the leader of ${'name'}`,
+        ],
     },
     // EVENTS
     {
         id: "royal-ball",
         name: () => {return "the annual Royal Ball"},
         subtitle: "the social event of the season",
-        clue: (toNode) => {return pickRandom([
-            `masked attendee hands the PCs ${'item'}`,
-            `attendees gossip about ${'topic'}`
-        ])},
-        item: (toNode) => {return pickRandom([
-            "an embossed invitation to the Royal Ball",
-            `a guest list for the Royal Ball with certain names ${pickRandom(["crossed out", "circled", "underlined"])}`
-        ])},
-        topic: (toNode) => {return 'name'},
-        person: (toNode) => {return `a guest of honor at the upcoming Royal Ball`},
-    }*/
+        clues: [
+            t`masked attendee hands the PCs ${'item'}`,
+            t`attendees gossip about ${'topic'}`,
+        ],
+        items: [
+            t`an embossed invitation to the Royal Ball`,
+            t`a guest list for the Royal Ball with certain names ${["crossed out", "circled", "underlined"]}`,
+        ],
+        topics: [
+            t`${'name'}`,
+        ],
+        people: [
+            t`a guest of honor at the upcoming Royal Ball`,
+        ],
+    }
 ];
 
 generate();
