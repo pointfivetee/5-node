@@ -13,6 +13,11 @@ const NETWORK = [
     [3,4]
 ];
 
+async function start() {
+    await nameGenInit();
+    generate();
+}
+
 function generate() {
     console.log("Generating nodes!");
     let nodes = [];
@@ -37,7 +42,7 @@ function generate() {
         renderNode(node);
     }
     // Reset list of previously chosen nodes
-    picks = [];
+    resetPicks();
 }
 
 function renderNode(node) {
@@ -55,29 +60,6 @@ function renderNode(node) {
         ul.appendChild(clueElem);
     });
 }
-
-const RETRIES = 5;
-let picks = [];
-function pickRandom(arr) {
-    let i = 0;
-    while (i < RETRIES) {
-        let pick = arr[Math.floor(Math.random() * arr.length)];
-        if (! picks.includes(pick)) {
-            picks.push(pick);
-            return pick;
-        }
-        i++;
-    }
-    let pick = arr[Math.floor(Math.random() * arr.length)];
-    console.log("<<retry limit reached: reusing item>>");
-    return pick;
-}
-
-/*function pickRandom(arr) {
-    let pick = arr[Math.floor(Math.random() * arr.length)];
-    console.log("accepting random pick:", pick);
-    return pick;
-}*/
 
 function generateNode() {
     let nodeType = pickRandom(NODE_TYPES);
@@ -126,7 +108,7 @@ const NODE_TYPES = [
     // PLACES
     {
         id: "residence",
-        name: () => {return `${pickRandom(["Alice", "Bob", "Claire"])}'s ${pickRandom(["hovel", "cottage", "house", "apartment", "estate", "mansion"])}`},
+        name: () => {return `${generateName()}'s ${pickRandom(["hovel", "cottage", "house", "apartment", "estate", "mansion"])}`},
         subtitle: "a private residence",
         clues: [
             t`${'item'} hidden in ${["bedroom", "kitchen", "privy", "garden"]}`,
@@ -309,7 +291,7 @@ const NODE_TYPES = [
     // PEOPLE
     {
         id: "npc",
-        name: () => {return `${pickRandom(["Diego", "Elena", "Forrest", "Geraldine"])} ${pickRandom(["Greenhold", "Harrier", "Ironbolt", "Joyce"])}`},
+        name: () => {return `${generateName()}`},
         subtitle: "a person of interest",
         clues: [
             t`carries ${'item'}`,
@@ -396,4 +378,4 @@ const NODE_TYPES = [
     }
 ];
 
-generate();
+start();
