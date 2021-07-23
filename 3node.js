@@ -47,7 +47,8 @@ function renderNode(node) {
     let ul = nodeElem.querySelector("ul");
     ul.innerHTML = "";
     node.clues.forEach(clue => {
-        clueElem = document.createElement("li");
+        let clueElem = document.createElement("li");
+        clueElem.classList.add("mb-1");
         clueElem.innerHTML = `${clue.text} <span style='white-space: nowrap'>(${clue.from}->${clue.to})</span>`;
         ul.appendChild(clueElem);
     });
