@@ -26,7 +26,11 @@ function generateName() {
 }
 
 function generateSurname() {
-    return pickRandom(NAMES.humanSurnames);
+    let g = NAMES.gnomeNames;
+    return pickRandom([
+        () => pickRandom(NAMES.humanSurnames),
+        () => `${pickRandom(g.surnamePrefixes)}${pickRandom(g.surnameSuffixes)}`
+    ])();
 }
 
 function generateHumanName() {
