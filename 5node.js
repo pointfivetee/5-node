@@ -316,7 +316,7 @@ const NODE_TYPES = [
     // ORGANIZATIONS
     {
         id: "noble-family",
-        name: () => {return `the House of ${pickRandom(["Argentos", "Borealis", "Clairmont", "Desdemona", "Eagleton", "Flechette"])}`},
+        name: () => {return `the House of ${generateSurname()}`},
         subtitle: "a noble family",
         clues: [
             t`bitter cousin shows the PCs ${'item'}`,
