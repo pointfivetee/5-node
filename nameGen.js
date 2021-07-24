@@ -10,14 +10,18 @@ function capitalize(str) {
 }
 
 async function nameGenInit() {
+    // Human name lists are based on US Census data
     NAMES.humanFirstNames = await loadJson("./names/humanFirstNames.json");
     NAMES.humanSurnames = await loadJson("./names/humanSurnames.json");
+
+    NAMES.gnomeNames = await loadJson("./names/gnomeNames.json");
 }
 
 function generateName() {
     return pickRandom([
         generateHumanName,
         generateOrcName,
+        generateGnomeName,
     ])();
 }
 
@@ -27,6 +31,11 @@ function generateSurname() {
 
 function generateHumanName() {
     return `${pickRandom(NAMES.humanFirstNames)} ${pickRandom(NAMES.humanSurnames)}`;
+}
+
+function generateGnomeName() {
+    let g = NAMES.gnomeNames;
+    return `${pickRandom(g.firstNames)} ${pickRandom(g.surnamePrefixes)}${pickRandom(g.surnameSuffixes)}`
 }
 
 function generateOrcName() {
