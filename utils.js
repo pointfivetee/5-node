@@ -32,3 +32,8 @@ function t(strings, ...tokens) {
         return result.join("");
     }
 }
+
+// Die roller
+function rollD(n) {
+    return Math.floor(Math.random()*n)+1;
+}
