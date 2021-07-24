@@ -19,25 +19,25 @@ async function start() {
 }
 
 function generate() {
-    console.log("Generating nodes!");
+    //console.log("Generating nodes!");
     let nodes = [];
     for (let i = 0; i < 5; i++) {
         let node = generateNode();
         node.label = String.fromCharCode(65+i);
         nodes.push(node);
     }
-    console.log("Generating clues!");
+    //console.log("Generating clues!");
     for (let link of NETWORK) {
         let fromNode = nodes[link[0]];
         let toNode = nodes[link[1]];
         let clue = generateClue(fromNode, toNode);
         fromNode.clues.push(clue);
     }
-    console.log("Finished generating!");
+    //console.log("Finished generating!");
     for (let node of nodes) {
-        console.log(`${node.label}: ${node.name}`);
+        //console.log(`${node.label}: ${node.name}`);
         for (let clue of node.clues) {
-            console.log("  " + clue.text);
+            //console.log("  " + clue.text);
         }
         renderNode(node);
     }
@@ -89,18 +89,6 @@ function generateClue(fromNode, toNode) {
         from: fromNode.label,
         to: toNode.label,
         text: clueText,
-    }
-}
-
-function t(strings, ...tokens) {
-    return function (context) {
-        let result = [strings[0]];
-        tokens.forEach(function(token, i) {
-            let value = token instanceof Array ? token : context[token];
-            result.push(value instanceof Function ? value() : value instanceof Array ? pickRandom(value) : value, strings[i + 1]);
-        });
-        console.log(result.join(""));
-        return result.join("");
     }
 }
 
