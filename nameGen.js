@@ -16,6 +16,7 @@ async function nameGenInit() {
 
     NAMES.gnomeNames = await loadJson("./names/gnomeNames.json");
     NAMES.halflingNames = await loadJson("./names/halflingNames.json");
+    NAMES.tieflingNames = await loadJson("./names/tieflingNames.json");
 }
 
 function generateName() {
@@ -24,6 +25,7 @@ function generateName() {
         generateOrcName,
         generateGnomeName,
         generateHalflingName,
+        generateTieflingName,
     ])();
 }
 
@@ -49,6 +51,49 @@ function generateGnomeName() {
 function generateHalflingName() {
     let h = NAMES.halflingNames;
     return `${pickRandom(h.firstNames)} ${pickRandom(h.surnames)}`;
+}
+
+function generateTieflingFullName() {
+    return pickRandom([
+        () => generateTieflingName(),
+        () => `${generateTieflingName()} ${generateTieflingName()}`,
+    ])();
+}
+
+function generateTieflingName() {
+    let t = NAMES.tieflingNames;
+    let c1 = t.initialConsonants;
+    let c2 = t.middleConsonants;
+    let c3 = t.finalConsonants;
+    let v1 = t.initialVowels;
+    let v2 = t.middleVowels;
+    let v3 = t.finalVowels;
+
+    let numPhonemes = rollD(3)+rollD(3)+1;
+    let vowel;
+    if (numPhonemes == 3 || numPhonemes == 5) {
+        vowel = true;
+    } else if (numPhonemes < 7) {
+        vowel = rollD(2) == 1;
+    } else {
+        vowel = false;
+    }
+    let name = "";
+
+    for (let i = 0; i < numPhonemes; i++) {
+        if (i == 0) {
+            name = name.concat(pickRandom(vowel ? v1 : c1));
+        } else if (i < numPhonemes - 1) {
+            name = name.concat(pickRandom(vowel ? v2 : c2));
+        } else {
+            name = name.concat(pickRandom(vowel ? v3 : c3));
+        }
+        vowel = !vowel;
+    }
+
+    // Light postprocessing
+    name = name.replace(/[Ll].l([^aeiou])/, match => match.slice(0,2).concat(match[3]))
+    return name;
 }
 
 function generateOrcName() {
