@@ -366,4 +366,6 @@ const NODE_TYPES = [
     }
 ];
 
-start();
+window.onload = () => {
+    start();
+}
