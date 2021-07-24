@@ -15,6 +15,7 @@ async function nameGenInit() {
     NAMES.humanSurnames = await loadJson("./names/humanSurnames.json");
 
     NAMES.gnomeNames = await loadJson("./names/gnomeNames.json");
+    NAMES.halflingNames = await loadJson("./names/halflingNames.json");
 }
 
 function generateName() {
@@ -22,14 +23,17 @@ function generateName() {
         generateHumanName,
         generateOrcName,
         generateGnomeName,
+        generateHalflingName,
     ])();
 }
 
 function generateSurname() {
     let g = NAMES.gnomeNames;
+    let h = NAMES.halflingNames;
     return pickRandom([
         () => pickRandom(NAMES.humanSurnames),
-        () => `${pickRandom(g.surnamePrefixes)}${pickRandom(g.surnameSuffixes)}`
+        () => `${pickRandom(g.surnamePrefixes)}${pickRandom(g.surnameSuffixes)}`,
+        () => pickRandom(h.surnames),
     ])();
 }
 
@@ -40,6 +44,11 @@ function generateHumanName() {
 function generateGnomeName() {
     let g = NAMES.gnomeNames;
     return `${pickRandom(g.firstNames)} ${pickRandom(g.surnamePrefixes)}${pickRandom(g.surnameSuffixes)}`
+}
+
+function generateHalflingName() {
+    let h = NAMES.halflingNames;
+    return `${pickRandom(h.firstNames)} ${pickRandom(h.surnames)}`;
 }
 
 function generateOrcName() {
