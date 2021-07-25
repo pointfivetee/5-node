@@ -17,6 +17,7 @@ async function nameGenInit() {
     NAMES.gnomeNames = await loadJson("./names/gnomeNames.json");
     NAMES.halflingNames = await loadJson("./names/halflingNames.json");
     NAMES.tieflingNames = await loadJson("./names/tieflingNames.json");
+    NAMES.dragonbornNames = await loadJson("./names/dragonbornNames.json");
 }
 
 function generateName() {
@@ -26,6 +27,7 @@ function generateName() {
         generateGnomeName,
         generateHalflingName,
         generateTieflingName,
+        generateDragonbornName,
     ])();
 }
 
@@ -58,6 +60,11 @@ function generateTieflingFullName() {
         () => generateTieflingName(),
         () => `${generateTieflingName()} ${generateTieflingName()}`,
     ])();
+}
+
+function generateDragonbornName() {
+    let d = NAMES.dragonbornNames;
+    return `${pickRandom(d.names)} of the ${pickRandom(d.adjectives)} ${pickRandom(d.nouns)}`;
 }
 
 function generateTieflingName() {
